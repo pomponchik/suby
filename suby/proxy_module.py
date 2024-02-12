@@ -1,6 +1,5 @@
 import sys
 from time import sleep
-from dataclasses import dataclass, field
 from threading import Thread, Lock
 from subprocess import Popen, PIPE
 from typing import List, Callable, Union, Optional, Any
@@ -10,14 +9,7 @@ from emptylog import EmptyLogger, LoggerProtocol
 from cantok import AbstractToken, SimpleToken, TimeoutToken, CancellationError
 
 from suby.errors import RunningCommandError
-
-
-@dataclass
-class SubprocessResult:
-    stdout: Optional[str] = None
-    stderr: Optional[str] = None
-    returncode: Optional[int] = None
-    killed_by_token: bool = False
+from suby.subprocess_result import SubprocessResult
 
 
 class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
@@ -66,8 +58,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
             else:
                 message = f'Error when executing the command "{arguments_string_representation}".'
                 logger.error(message)
-                exception = RunningCommandError(message)
-                exception.result = result
+                exception = RunningCommandError(message, result)
                 raise exception
 
         else:
