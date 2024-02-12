@@ -34,8 +34,8 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
 
         arguments_string_representation = ' '.join([argument if ' ' not in argument else f'"{argument}"' for argument in arguments])
 
-        stdout_buffer = []
-        stderr_buffer = []
+        stdout_buffer: List[str] = []
+        stderr_buffer: List[str] = []
         result = SubprocessResult()
 
         logger.info(f'The beginning of the execution of the command "{arguments_string_representation}".')
@@ -45,7 +45,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
             if token is not None:
                 killing_thread = self.run_killing_thread(process, token, result)
 
-            for line in process.stdout:
+            for line in process.stdout:  # type: ignore[union-attr]
                 stdout_buffer.append(line)
                 if not catch_output:
                     stdout_callback(line)
