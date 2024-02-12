@@ -1,0 +1,2 @@
+class RunningCommandError(Exception):
+    pass
