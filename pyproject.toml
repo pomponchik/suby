@@ -13,6 +13,7 @@ readme = "README.md"
 requires-python = ">=3.7"
 dependencies = [
     'emptylog',
+    'cantok',
 ]
 classifiers = [
     "Operating System :: OS Independent",
