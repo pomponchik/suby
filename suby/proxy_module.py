@@ -1,6 +1,6 @@
 import sys
 from time import sleep
-from threading import Thread, Lock
+from threading import Thread
 from subprocess import Popen, PIPE
 from typing import List, Callable, Union, Optional, Any
 from functools import partial
@@ -13,8 +13,6 @@ from suby.subprocess_result import SubprocessResult
 
 
 class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
-    lock = Lock()
-
     def __call__(self, *arguments: str, catch_output: bool = False, logger: LoggerProtocol = EmptyLogger(), stdout_callback: Callable[[str], Any] = partial(print, end=''), stderr_callback: Callable[[str], Any] = sys.stderr.write, timeout: Optional[Union[int, float]] = None, token: Optional[AbstractToken] = None) -> SubprocessResult:
         """
         About reading from strout and stderr: https://stackoverflow.com/a/28319191/14522393
@@ -71,6 +69,11 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
         thread.start()
         return thread
 
+    def run_stderr_thread(self, process: Popen, stderr_buffer: List[str], result: SubprocessResult, catch_output: bool, stderr_callback: Callable[[str], Any]) -> Thread:
+        thread = Thread(target=self.read_stderr, args=(process, stderr_buffer, result, catch_output, stderr_callback))
+        thread.start()
+        return thread
+
     @staticmethod
     def killing_loop(process: Popen, token: AbstractToken, result: SubprocessResult) -> None:
         while True:
@@ -81,11 +84,6 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
             if process.poll() is not None:
                 break
             sleep(0.0001)
-
-    def run_stderr_thread(self, process: Popen, stderr_buffer: List[str], result: SubprocessResult, catch_output: bool, stderr_callback: Callable[[str], Any]) -> Thread:
-        thread = Thread(target=self.read_stderr, args=(process, stderr_buffer, result, catch_output, stderr_callback))
-        thread.start()
-        return thread
 
     @staticmethod
     def read_stderr(process: Popen, stderr_buffer: List[str], result: SubprocessResult, catch_output: bool, stderr_callback: Callable[[str], Any]) -> None:
