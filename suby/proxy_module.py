@@ -49,7 +49,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
         if process.returncode != 0:
             if result.killed_by_token:
                 try:
-                    token.check()
+                    token.check()  # type: ignore[union-attr]
                 except CancellationError as e:
                     e.result = result
                     raise e
@@ -64,18 +64,18 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
 
         return result
 
-    def run_killing_thread(self, process: Popen, token: AbstractToken, result: SubprocessResult) -> Thread:
+    def run_killing_thread(self, process: Popen, token: AbstractToken, result: SubprocessResult) -> Thread:  # type: ignore[type-arg]
         thread = Thread(target=self.killing_loop, args=(process, token, result))
         thread.start()
         return thread
 
-    def run_stderr_thread(self, process: Popen, stderr_buffer: List[str], result: SubprocessResult, catch_output: bool, stderr_callback: Callable[[str], Any]) -> Thread:
+    def run_stderr_thread(self, process: Popen, stderr_buffer: List[str], result: SubprocessResult, catch_output: bool, stderr_callback: Callable[[str], Any]) -> Thread:  # type: ignore[type-arg]
         thread = Thread(target=self.read_stderr, args=(process, stderr_buffer, result, catch_output, stderr_callback))
         thread.start()
         return thread
 
     @staticmethod
-    def killing_loop(process: Popen, token: AbstractToken, result: SubprocessResult) -> None:
+    def killing_loop(process: Popen, token: AbstractToken, result: SubprocessResult) -> None:  # type: ignore[type-arg]
         while True:
             if not token:
                 process.kill()
@@ -86,7 +86,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
             sleep(0.0001)
 
     @staticmethod
-    def read_stderr(process: Popen, stderr_buffer: List[str], result: SubprocessResult, catch_output: bool, stderr_callback: Callable[[str], Any]) -> None:
+    def read_stderr(process: Popen, stderr_buffer: List[str], result: SubprocessResult, catch_output: bool, stderr_callback: Callable[[str], Any]) -> None:  # type: ignore[type-arg]
         for line in process.stderr:
             stderr_buffer.append(line)
             if not catch_output:
