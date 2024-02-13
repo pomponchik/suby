@@ -13,7 +13,7 @@ from suby.subprocess_result import SubprocessResult
 
 
 class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
-    def __call__(self, *arguments: str, catch_output: bool = False, logger: LoggerProtocol = EmptyLogger(), stdout_callback: Callable[[str], Any] = partial(print, end=''), stderr_callback: Callable[[str], Any] = sys.stderr.write, timeout: Optional[Union[int, float]] = None, token: Optional[AbstractToken] = None) -> SubprocessResult:
+    def __call__(self, *arguments: str, catch_output: bool = False, catch_exceptions: bool = False, logger: LoggerProtocol = EmptyLogger(), stdout_callback: Callable[[str], Any] = partial(print, end=''), stderr_callback: Callable[[str], Any] = sys.stderr.write, timeout: Optional[Union[int, float]] = None, token: Optional[AbstractToken] = None) -> SubprocessResult:
         """
         About reading from strout and stderr: https://stackoverflow.com/a/28319191/14522393
         """
@@ -46,7 +46,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
 
         self.fill_result(stdout_buffer, stderr_buffer, process.returncode, result)
 
-        if process.returncode != 0:
+        if process.returncode != 0 and not catch_exceptions:
             if result.killed_by_token:
                 try:
                     token.check()  # type: ignore[union-attr]
