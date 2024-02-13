@@ -49,6 +49,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
 
         if process.returncode != 0 and not catch_exceptions:
             if result.killed_by_token:
+                logger.error(f'The execution of the "{arguments_string_representation}" command was canceled using a cancellation token.')
                 try:
                     token.check()  # type: ignore[union-attr]
                 except CancellationError as e:
