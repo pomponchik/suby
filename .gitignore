@@ -11,3 +11,4 @@ test.py
 .idea
 .ruff_cache
 .mutmut-cache
+.mypy_cache
