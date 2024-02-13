@@ -126,7 +126,6 @@ def test_logging_with_timeout():
 
     suby(sys.executable, '-c', f'import time; time.sleep({500_000})', logger=logger, catch_exceptions=True, catch_output=True, timeout=0.0001)
 
-    print(logger.data.error)
     assert len(logger.data.info) == 1
     assert len(logger.data.error) == 1
 
