@@ -47,19 +47,25 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
 
         self.fill_result(stdout_buffer, stderr_buffer, process.returncode, result)
 
-        if process.returncode != 0 and not catch_exceptions:
-            if result.killed_by_token:
-                logger.error(f'The execution of the "{arguments_string_representation}" command was canceled using a cancellation token.')
-                try:
-                    token.check()  # type: ignore[union-attr]
-                except CancellationError as e:
-                    e.result = result  # type: ignore[attr-defined]
-                    raise e
+        if process.returncode != 0:
+            if not catch_exceptions:
+                if result.killed_by_token:
+                    logger.error(f'The execution of the "{arguments_string_representation}" command was canceled using a cancellation token.')
+                    try:
+                        token.check()  # type: ignore[union-attr]
+                    except CancellationError as e:
+                        e.result = result  # type: ignore[attr-defined]
+                        raise e
+                else:
+                    message = f'Error when executing the command "{arguments_string_representation}".'
+                    logger.error(message)
+                    exception = RunningCommandError(message, result)
+                    raise exception
             else:
-                message = f'Error when executing the command "{arguments_string_representation}".'
-                logger.error(message)
-                exception = RunningCommandError(message, result)
-                raise exception
+                if result.killed_by_token:
+                    logger.error(f'The execution of the "{arguments_string_representation}" command was canceled using a cancellation token.')
+                else:
+                    logger.error(f'Error when executing the command "{arguments_string_representation}".')
 
         else:
             logger.info(f'The command "{arguments_string_representation}" has been successfully executed.')
