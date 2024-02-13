@@ -6,7 +6,7 @@ from typing import List, Callable, Union, Optional, Any
 from functools import partial
 
 from emptylog import EmptyLogger, LoggerProtocol
-from cantok import AbstractToken, SimpleToken, TimeoutToken, CancellationError
+from cantok import AbstractToken, TimeoutToken, CancellationError
 
 from suby.errors import RunningCommandError
 from suby.subprocess_result import SubprocessResult
