@@ -64,7 +64,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
 
         return result
 
-    def run_killing_thread(self, process: Popen, token: AbstractToken, result: SubprocessResult) -> None:
+    def run_killing_thread(self, process: Popen, token: AbstractToken, result: SubprocessResult) -> Thread:
         thread = Thread(target=self.killing_loop, args=(process, token, result))
         thread.start()
         return thread
