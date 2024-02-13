@@ -3,7 +3,6 @@ from time import sleep
 from threading import Thread
 from subprocess import Popen, PIPE
 from typing import List, Callable, Union, Optional, Any
-from functools import partial
 
 from emptylog import EmptyLogger, LoggerProtocol
 from cantok import AbstractToken, TimeoutToken, CancellationError
