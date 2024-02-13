@@ -5,6 +5,7 @@ from contextlib import redirect_stdout, redirect_stderr
 
 import pytest
 from cantok import TimeoutCancellationError
+from emptylog import MemoryLogger
 
 import suby
 from suby import RunningCommandError
@@ -106,3 +107,28 @@ def test_catching_output():
         assert result.returncode == 0
         assert stderr_buffer.getvalue() == ''
         assert stdout_buffer.getvalue() == ''
+
+
+def test_logging_normal_way():
+    logger = MemoryLogger()
+
+    suby(sys.executable, '-c', 'print("kek", end="")', logger=logger, catch_output=True)
+
+    assert len(logger.data.info) == 2
+    assert len(logger.data.error) == 0
+
+    assert logger.data.info[0].message == f'The beginning of the execution of the command "{sys.executable} -c "print("kek", end="")"".'
+    assert logger.data.info[1].message == f'The command "{sys.executable} -c "print("kek", end="")"" has been successfully executed.'
+
+
+def test_logging_with_timeout():
+    logger = MemoryLogger()
+
+    suby(sys.executable, '-c', f'import time; time.sleep({500_000})', logger=logger, catch_exceptions=True, catch_output=True, timeout=0.0001)
+
+    print(logger.data.error)
+    assert len(logger.data.info) == 1
+    assert len(logger.data.error) == 1
+
+    assert logger.data.info[0].message == f'The beginning of the execution of the command "{sys.executable} -c "import time; time.sleep(500000)"".'
+    assert logger.data.error[0].message == f'The execution of the "{sys.executable} -c "import time; time.sleep(500000)"" command was canceled using a cancellation token.'
