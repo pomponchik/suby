@@ -1,3 +1,4 @@
+import re
 import sys
 from time import perf_counter
 from io import StringIO
@@ -71,7 +72,7 @@ def test_timeout_without_catching_exception():
 
 
 def test_exception_in_subprocess_without_catching():
-    with pytest.raises(RunningCommandError, match=f'Error when executing the command "{sys.executable} -c "raise ValueError"".'):
+    with pytest.raises(RunningCommandError, match=re.escape(f'Error when executing the command "{sys.executable} -c "raise ValueError"".')):
         suby(sys.executable, '-c', 'raise ValueError')
 
     try:
