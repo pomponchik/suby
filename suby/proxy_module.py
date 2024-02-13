@@ -59,8 +59,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
                 else:
                     message = f'Error when executing the command "{arguments_string_representation}".'
                     logger.error(message)
-                    exception = RunningCommandError(message, result)
-                    raise exception
+                    raise RunningCommandError(message, result)
             else:
                 if result.killed_by_token:
                     logger.error(f'The execution of the "{arguments_string_representation}" command was canceled using a cancellation token.')
