@@ -121,7 +121,7 @@ def test_logging_normal_way():
     assert logger.data.info[1].message == f'The command "{sys.executable} -c "print("kek", end="")"" has been successfully executed.'
 
 
-def test_logging_with_timeout():
+def test_logging_with_expired_timeout():
     logger = MemoryLogger()
 
     suby(sys.executable, '-c', f'import time; time.sleep({500_000})', logger=logger, catch_exceptions=True, catch_output=True, timeout=0.0001)
@@ -131,3 +131,41 @@ def test_logging_with_timeout():
 
     assert logger.data.info[0].message == f'The beginning of the execution of the command "{sys.executable} -c "import time; time.sleep(500000)"".'
     assert logger.data.error[0].message == f'The execution of the "{sys.executable} -c "import time; time.sleep(500000)"" command was canceled using a cancellation token.'
+
+
+def test_logging_with_exception():
+    logger = MemoryLogger()
+
+    suby(sys.executable, '-c', f'1/0', logger=logger, catch_exceptions=True, catch_output=True)
+
+    assert len(logger.data.info) == 1
+    assert len(logger.data.error) == 1
+
+    assert logger.data.info[0].message == f'The beginning of the execution of the command "{sys.executable} -c 1/0".'
+    assert logger.data.error[0].message == f'Error when executing the command "{sys.executable} -c 1/0".'
+
+
+def test_logging_with_expired_timeout_without_catching_exceptions():
+    logger = MemoryLogger()
+
+    with pytest.raises(TimeoutCancellationError):
+        suby(sys.executable, '-c', f'import time; time.sleep({500_000})', logger=logger, catch_output=True, timeout=0.0001)
+
+    assert len(logger.data.info) == 1
+    assert len(logger.data.error) == 1
+
+    assert logger.data.info[0].message == f'The beginning of the execution of the command "{sys.executable} -c "import time; time.sleep(500000)"".'
+    assert logger.data.error[0].message == f'The execution of the "{sys.executable} -c "import time; time.sleep(500000)"" command was canceled using a cancellation token.'
+
+
+def test_logging_with_exception_without_catching_exceptions():
+    logger = MemoryLogger()
+
+    with pytest.raises(RunningCommandError):
+        suby(sys.executable, '-c', f'1/0', logger=logger, catch_output=True)
+
+    assert len(logger.data.info) == 1
+    assert len(logger.data.error) == 1
+
+    assert logger.data.info[0].message == f'The beginning of the execution of the command "{sys.executable} -c 1/0".'
+    assert logger.data.error[0].message == f'Error when executing the command "{sys.executable} -c 1/0".'
