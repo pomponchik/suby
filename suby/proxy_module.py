@@ -20,7 +20,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
         if timeout is not None and token is None:
             token = TimeoutToken(timeout)
         elif timeout is not None:
-            token += TimeoutToken(timeout)
+            token += TimeoutToken(timeout)  # type: ignore[operator]
 
         arguments_string_representation = ' '.join([argument if ' ' not in argument else f'"{argument}"' for argument in arguments])
 
@@ -51,7 +51,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
                 try:
                     token.check()  # type: ignore[union-attr]
                 except CancellationError as e:
-                    e.result = result
+                    e.result = result  # type: ignore[attr-defined]
                     raise e
             else:
                 message = f'Error when executing the command "{arguments_string_representation}".'
@@ -87,7 +87,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
 
     @staticmethod
     def read_stderr(process: Popen, stderr_buffer: List[str], result: SubprocessResult, catch_output: bool, stderr_callback: Callable[[str], Any]) -> None:  # type: ignore[type-arg]
-        for line in process.stderr:
+        for line in process.stderr:  # type: ignore[union-attr]
             stderr_buffer.append(line)
             if not catch_output:
                 stderr_callback(line)
