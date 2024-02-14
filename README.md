@@ -53,12 +53,14 @@ The `suby` function returns an object of the `SubprocessResult` class. It contai
 - **stdout** - a string containing the entire buffered output of the command being run.
 - **stderr** - a string containing the entire buffered stderr of the command being run.
 - **returncode** - an integer indicating the return code of the subprocess.
+- **killed_by_token** - a boolean flag indicating whether the subprocess was killed due to token cancellation.
 
-The simplest example of how to work with it:
+The simplest example of what it might look like:
 
 ```python
 import suby
 
-suby('python', '-c', 'print("hello, world!")')
-# > hello, world!
+result = suby('python', '-c', 'print("hello, world!")')
+print(result)
+# > SubprocessResult(id='e9f2d29acb4011ee8957320319d7541c', stdout='hello, world!\n', stderr='', returncode=0, killed_by_token=False)
 ```
