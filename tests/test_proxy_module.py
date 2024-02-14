@@ -5,7 +5,7 @@ from io import StringIO
 from contextlib import redirect_stdout, redirect_stderr
 
 import pytest
-from cantok import TimeoutCancellationError, ConditionCancellationError, ConditionToken
+from cantok import TimeoutCancellationError, ConditionCancellationError, ConditionToken, SimpleToken
 from emptylog import MemoryLogger
 
 import suby
@@ -14,6 +14,14 @@ from suby import RunningCommandError
 
 def test_normal_way():
     result = suby(sys.executable, '-c', 'print("kek")')
+
+    assert result.stdout == 'kek\n'
+    assert result.stderr == ''
+    assert result.returncode == 0
+
+
+def test_normal_way_with_simple_token():
+    result = suby(sys.executable, '-c', 'print("kek")', token=SimpleToken())
 
     assert result.stdout == 'kek\n'
     assert result.stderr == ''
