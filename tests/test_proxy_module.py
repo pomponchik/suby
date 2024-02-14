@@ -270,3 +270,41 @@ def test_token_plus_timeout_but_timeout_is_less_without_catching():
 
     assert end_time - start_time >= timeout/2
     assert end_time - start_time < sleep_time
+
+
+def test_replace_stdout_callback():
+    accumulator = []
+
+    stderr_buffer = StringIO()
+    stdout_buffer = StringIO()
+
+    with redirect_stdout(stdout_buffer), redirect_stderr(stderr_buffer):
+        result = suby(sys.executable, '-c', 'print("kek")', stdout_callback=lambda x: accumulator.append(x))
+
+    assert accumulator == ['kek\n']
+
+    assert result.returncode == 0
+    assert result.stdout == 'kek\n'
+    assert result.stderr == ''
+
+    assert stderr_buffer.getvalue() == ''
+    assert stdout_buffer.getvalue() == ''
+
+
+def test_replace_stderr_callback():
+    accumulator = []
+
+    stderr_buffer = StringIO()
+    stdout_buffer = StringIO()
+
+    with redirect_stdout(stdout_buffer), redirect_stderr(stderr_buffer):
+        result = suby(sys.executable, '-c', 'import sys; sys.stderr.write("kek")', stderr_callback=lambda x: accumulator.append(x))
+
+    assert accumulator == ['kek']
+
+    assert result.returncode == 0
+    assert result.stdout == ''
+    assert result.stderr == 'kek'
+
+    assert stderr_buffer.getvalue() == ''
+    assert stdout_buffer.getvalue() == ''
