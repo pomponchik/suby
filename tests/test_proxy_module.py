@@ -5,7 +5,7 @@ from io import StringIO
 from contextlib import redirect_stdout, redirect_stderr
 
 import pytest
-from cantok import TimeoutCancellationError, ConditionToken
+from cantok import TimeoutCancellationError, ConditionCancellationError, ConditionToken
 from emptylog import MemoryLogger
 
 import suby
@@ -180,6 +180,30 @@ def test_only_token():
     token = ConditionToken(lambda: perf_counter() - start_time > timeout)
 
     result = suby(sys.executable, '-c', f'import time; time.sleep({sleep_time})', catch_exceptions=True, token=token)
+
+    end_time = perf_counter()
+
+    assert result.returncode != 0
+    assert result.stdout == ''
+    assert result.stderr == ''
+    assert result.killed_by_token == True
+
+    assert end_time - start_time >= timeout
+    assert end_time - start_time < sleep_time
+
+
+def test_only_token_without_catching():
+    sleep_time = 100000
+    timeout = 0.1
+
+    start_time = perf_counter()
+    token = ConditionToken(lambda: perf_counter() - start_time > timeout)
+
+    try:
+        result = suby(sys.executable, '-c', f'import time; time.sleep({sleep_time})', token=token)
+    except ConditionCancellationError as e:
+        assert e.token is token
+        result = e.result
 
     end_time = perf_counter()
 
