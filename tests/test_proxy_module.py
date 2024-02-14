@@ -214,3 +214,51 @@ def test_only_token_without_catching():
 
     assert end_time - start_time >= timeout
     assert end_time - start_time < sleep_time
+
+
+def test_token_plus_timeout_but_timeout_is_more_without_catching():
+    sleep_time = 100000
+    timeout = 0.1
+
+    start_time = perf_counter()
+    token = ConditionToken(lambda: perf_counter() - start_time > timeout)
+
+    try:
+        result = suby(sys.executable, '-c', f'import time; time.sleep({sleep_time})', token=token, timeout=3)
+    except ConditionCancellationError as e:
+        assert e.token is token
+        result = e.result
+
+    end_time = perf_counter()
+
+    assert result.returncode != 0
+    assert result.stdout == ''
+    assert result.stderr == ''
+    assert result.killed_by_token == True
+
+    assert end_time - start_time >= timeout
+    assert end_time - start_time < sleep_time
+
+
+def test_token_plus_timeout_but_timeout_is_less_without_catching():
+    sleep_time = 100000
+    timeout = 0.1
+
+    start_time = perf_counter()
+    token = ConditionToken(lambda: perf_counter() - start_time > timeout)
+
+    try:
+        result = suby(sys.executable, '-c', f'import time; time.sleep({sleep_time})', token=token, timeout=timeout/2)
+    except TimeoutCancellationError as e:
+        assert e.token is not token
+        result = e.result
+
+    end_time = perf_counter()
+
+    assert result.returncode != 0
+    assert result.stdout == ''
+    assert result.stderr == ''
+    assert result.killed_by_token == True
+
+    assert end_time - start_time >= timeout/2
+    assert end_time - start_time < sleep_time
