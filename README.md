@@ -10,3 +10,11 @@
 [![PyPI version](https://badge.fury.io/py/suby.svg)](https://badge.fury.io/py/suby)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
+
+Here is a small wrapper around the [subprocesses](https://docs.python.org/3/library/subprocess.html). You can find many similar wrappers, but this particular one differs from the others in the following parameters:
+
+- Beautiful minimalistic call syntax.
+- Ability to specify your callbacks to catch `stdout` and `stderr`.
+- Support for [cancellation tokens](https://github.com/pomponchik/cantok).
+- You can set timeouts for subprocesses.
