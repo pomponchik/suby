@@ -24,6 +24,7 @@ Here is a small wrapper around the [subprocesses](https://docs.python.org/3/libr
 ## Table of contents
 
 - [**Quick start**](#quick-start)
+- [**Run subprocess and look at the result**](#run-subprocess-and-look-at-the-result)
 
 
 ## Quick start
@@ -35,6 +36,25 @@ pip install suby
 ```
 
 And use:
+
+```python
+import suby
+
+suby('python', '-c', 'print("hello, world!")')
+# > hello, world!
+```
+
+
+## Run subprocess and look at the result
+
+The `suby` function returns an object of the `SubprocessResult` class. It contains the following required fields:
+
+- **id** - a unique string that allows you to distinguish one result of calling the same command from another.
+- **stdout** - a string containing the entire buffered output of the command being run.
+- **stderr** - a string containing the entire buffered stderr of the command being run.
+- **returncode** - an integer indicating the return code of the subprocess.
+
+The simplest example of how to work with it:
 
 ```python
 import suby
