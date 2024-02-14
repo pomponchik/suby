@@ -49,7 +49,7 @@ suby('python', '-c', 'print("hello, world!")')
 
 The `suby` function returns an object of the `SubprocessResult` class. It contains the following required fields:
 
-- **id** - a unique string that allows you to distinguish one result of calling the same command from another.
+- `**id**` - a unique string that allows you to distinguish one result of calling the same command from another.
 - **stdout** - a string containing the entire buffered output of the command being run.
 - **stderr** - a string containing the entire buffered stderr of the command being run.
 - **returncode** - an integer indicating the return code of the subprocess.
