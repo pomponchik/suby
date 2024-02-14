@@ -40,4 +40,5 @@ And use:
 import suby
 
 suby('python', '-c', 'print("hello, world!")')
+# > hello, world!
 ```
