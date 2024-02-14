@@ -5,7 +5,7 @@ from io import StringIO
 from contextlib import redirect_stdout, redirect_stderr
 
 import pytest
-from cantok import TimeoutCancellationError
+from cantok import TimeoutCancellationError, ConditionToken
 from emptylog import MemoryLogger
 
 import suby
@@ -170,3 +170,23 @@ def test_logging_with_exception_without_catching_exceptions():
 
     assert logger.data.info[0].message == f'The beginning of the execution of the command "{sys.executable} -c 1/0".'
     assert logger.data.error[0].message == f'Error when executing the command "{sys.executable} -c 1/0".'
+
+
+def test_only_token():
+    sleep_time = 100000
+    timeout = 0.1
+
+    start_time = perf_counter()
+    token = ConditionToken(lambda: perf_counter() - start_time > timeout)
+
+    result = suby(sys.executable, '-c', f'import time; time.sleep({sleep_time})', catch_exceptions=True, token=token)
+
+    end_time = perf_counter()
+
+    assert result.returncode != 0
+    assert result.stdout == ''
+    assert result.stderr == ''
+    assert result.killed_by_token == True
+
+    assert end_time - start_time >= timeout
+    assert end_time - start_time < sleep_time
