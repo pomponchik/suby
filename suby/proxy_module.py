@@ -13,7 +13,17 @@ from suby.callbacks import stdout_with_flush, stderr_with_flush
 
 
 class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
-    def __call__(self, *arguments: str, catch_output: bool = False, catch_exceptions: bool = False, logger: LoggerProtocol = EmptyLogger(), stdout_callback: Callable[[str], Any] = stdout_with_flush, stderr_callback: Callable[[str], Any] = stderr_with_flush, timeout: Optional[Union[int, float]] = None, token: Optional[AbstractToken] = None) -> SubprocessResult:
+    def __call__(
+        self,
+        *arguments: str,
+        catch_output: bool = False,
+        catch_exceptions: bool = False,
+        logger: LoggerProtocol = EmptyLogger(),
+        stdout_callback: Callable[[str], Any] = stdout_with_flush,
+        stderr_callback: Callable[[str], Any] = stderr_with_flush,
+        timeout: Optional[Union[int, float]] = None,
+        token: Optional[AbstractToken] = None,
+    ) -> SubprocessResult:
         """
         About reading from strout and stderr: https://stackoverflow.com/a/28319191/14522393
         """
