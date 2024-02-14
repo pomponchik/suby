@@ -12,3 +12,4 @@ test.py
 .ruff_cache
 .mutmut-cache
 .mypy_cache
+html
