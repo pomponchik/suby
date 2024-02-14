@@ -18,3 +18,26 @@ Here is a small wrapper around the [subprocesses](https://docs.python.org/3/libr
 - Ability to specify your callbacks to catch `stdout` and `stderr`.
 - Support for [cancellation tokens](https://github.com/pomponchik/cantok).
 - You can set timeouts for subprocesses.
+- Logging of command execution.
+
+
+## Table of contents
+
+- [**Quick start**](#quick-start)
+
+
+## Quick start
+
+Install it:
+
+```bash
+pip install suby
+```
+
+And use:
+
+```python
+import suby
+
+suby('python', '-c', 'print("hello, world!")')
+```
