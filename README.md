@@ -128,6 +128,8 @@ suby('python', '-c', 'raise ValueError', logger=logging.getLogger('logger_name')
 
 If you don't need these details, just don't pass the logger object.
 
+If you still prefer logging, you can use any object that implements the [logger protocol](https://github.com/pomponchik/emptylog?tab=readme-ov-file#universal-logger-protocol) from the [`emptylog`](https://github.com/pomponchik/emptylog) library, including ones from third-party libraries.
+
 
 ## Exceptions
 
