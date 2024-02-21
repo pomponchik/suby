@@ -25,8 +25,9 @@ Here is a small wrapper around the [subprocesses](https://docs.python.org/3/libr
 
 - [**Quick start**](#quick-start)
 - [**Run subprocess and look at the result**](#run-subprocess-and-look-at-the-result)
-- [**Exceptions**](#exceptions)
 - [**Output**](#output)
+- [**Logging**](#logging)
+- [**Exceptions**](#exceptions)
 
 
 ## Quick start
@@ -66,6 +67,66 @@ result = suby('python', '-c', 'print("hello, world!")')
 print(result)
 # > SubprocessResult(id='e9f2d29acb4011ee8957320319d7541c', stdout='hello, world!\n', stderr='', returncode=0, killed_by_token=False)
 ```
+
+
+## Output
+
+By default, the `stdout` and `stderr` of the subprocess are intercepted and output to the `stdout` and `stderr` of the current process. The reading from the subprocess is continuous, and the output is every time a full line is read. For continuous reading from `stderr`, a separate thread is created in the main process, so that `stdout` and `stderr` are read independently.
+
+You can override the output functions for `stdout` and `stderr`. To do this, you need to pass as arguments `stdout_callback` and `stderr_callback`, respectively, some functions that accept a string as an argument. For example, you can color the output (the code example uses the [`termcolor`](https://github.com/termcolor/termcolor) library):
+
+```python
+import suby
+from termcolor import colored
+
+def my_new_stdout(string: str) -> None:
+    print(colored(string, 'red'), end='')
+
+suby('python', '-c', 'print("hello, world!")', stdout_callback=my_new_stdout)
+# > hello, world!
+# You can't see it here, but believe me, if you repeat the code at home, the output in the console will be red!
+```
+
+You can also completely disable the output by passing `True` as the `catch_output` parameter:
+
+```python
+suby('python', '-c', 'print("hello, world!")', catch_output=True)
+# There's nothing here.
+```
+
+If you specify `catch_output=True`, and at the same time redefine your functions for output, your functions will not be called either. In addition, `suby` always returns [the result](#run-subprocess-and-look-at-the-result) of executing the command, containing the full output. The `catch_output` argument can stop exactly the output, but it does not prevent the collection and buffering of the output.
+
+
+## Logging
+
+By default, `suby` does not log command execution. However, you can pass a logger object to the function, and in this case logs will be recorded at the start of the command execution and at the end of the execution:
+
+```python
+import logging
+import suby
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.StreamHandler(),
+    ]
+)
+
+suby('python', '-c', 'pass', logger=logging.getLogger('logger_name'))
+# > 2024-02-22 02:15:08,155 [INFO] The beginning of the execution of the command "python -c pass".
+# > 2024-02-22 02:15:08,190 [INFO] The command "python -c pass" has been successfully executed.
+```
+
+The message about the start of the command execution is always done with the `INFO` [level](https://docs.python.org/3.8/library/logging.html#logging-levels). If the command is completed successfully, the end message will also be with the `INFO` level. And if not - `ERROR`:
+
+```python
+suby('python', '-c', 'raise ValueError', logger=logging.getLogger('logger_name'), catch_exceptions=True, catch_output=True)
+# > 2024-02-22 02:20:25,549 [INFO] The beginning of the execution of the command "python -c "raise ValueError"".
+# > 2024-02-22 02:20:25,590 [ERROR] Error when executing the command "python -c "raise ValueError"".
+```
+
+If you don't need these details, just don't pass the logger object.
 
 
 ## Exceptions
@@ -124,31 +185,3 @@ except TimeoutCancellationError as e:
     print(e.result)
     # > SubprocessResult(id='a80dc26cd03211eea347320319d7541c', stdout='', stderr='', returncode=-9, killed_by_token=True)
 ```
-
-
-## Output
-
-By default, the `stdout` and `stderr` of the subprocess are intercepted and output to the `stdout` and `stderr` of the current process. The reading from the subprocess is continuous, and the output is every time a full line is read. For continuous reading from `stderr`, a separate thread is created in the main process, so that `stdout` and `stderr` are read independently.
-
-You can override the output functions for `stdout` and `stderr`. To do this, you need to pass as arguments `stdout_callback` and `stderr_callback`, respectively, some functions that accept a string as an argument. For example, you can color the output (the code example uses the [`termcolor`](https://github.com/termcolor/termcolor) library):
-
-```python
-import suby
-from termcolor import colored
-
-def my_new_stdout(string: str) -> None:
-    print(colored(string, 'red'), end='')
-
-suby('python', '-c', 'print("hello, world!")', stdout_callback=my_new_stdout)
-# > hello, world!
-# You can't see it here, but believe me, if you repeat the code at home, the output in the console will be red!
-```
-
-You can also completely disable the output by passing `True` as the `catch_output` parameter:
-
-```python
-suby('python', '-c', 'print("hello, world!")', catch_output=True)
-# There's nothing here.
-```
-
-If you specify `catch_output=True`, and at the same time redefine your functions for output, your functions will not be called either. In addition, `suby` always returns [the result](#run-subprocess-and-look-at-the-result) of executing the command, containing the full output. The `catch_output` argument can stop exactly the output, but it does not prevent the collection and buffering of the output.
