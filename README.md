@@ -28,6 +28,7 @@ Here is a small wrapper around the [subprocesses](https://docs.python.org/3/libr
 - [**Output**](#output)
 - [**Logging**](#logging)
 - [**Exceptions**](#exceptions)
+- [**Working with Cancellation Tokens**](#working-with-cancellation-tokens)
 
 
 ## Quick start
@@ -187,3 +188,10 @@ except TimeoutCancellationError as e:
     print(e.result)
     # > SubprocessResult(id='a80dc26cd03211eea347320319d7541c', stdout='', stderr='', returncode=-9, killed_by_token=True)
 ```
+
+
+## Working with Cancellation Tokens
+
+`suby` is fully compatible with the [cancellation token pattern](https://cantok.readthedocs.io/en/latest/the_pattern/) and supports any token objects from the [`cantok`](https://github.com/pomponchik/cantok) library.
+
+The essence of the pattern is that you can pass an object to `suby`, from which it can find out whether the operation still needs to be continued or not. If not, it kills the subprocess. This pattern can be especially useful in the case of commands that are executed for a long time or for an unpredictably long time. When the result becomes unnecessary, there is no point in sitting and waiting for the command to work out.
