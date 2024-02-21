@@ -25,8 +25,8 @@ Here is a small wrapper around the [subprocesses](https://docs.python.org/3/libr
 
 - [**Quick start**](#quick-start)
 - [**Run subprocess and look at the result**](#run-subprocess-and-look-at-the-result)
-- [**Working with exceptions**](#working-with-exceptions)
-- [**Output and logging**](#output-and-logging)
+- [**Exceptions**](#exceptions)
+- [**Output**](#output)
 
 
 ## Quick start
@@ -68,7 +68,7 @@ print(result)
 ```
 
 
-## Working with exceptions
+## Exceptions
 
 By default, `suby` raises exceptions in three cases:
 
@@ -126,4 +126,29 @@ except TimeoutCancellationError as e:
 ```
 
 
-## Output and logging
+## Output
+
+By default, the `stdout` and `stderr` of the subprocess are intercepted and output to the `stdout` and `stderr` of the current process. The reading from the subprocess is continuous, and the output is every time a full line is read. For continuous reading from `stderr`, a separate thread is created in the main process, so that `stdout` and `stderr` are read independently.
+
+You can override the output functions for `stdout` and `stderr`. To do this, you need to pass as arguments `stdout_callback` and `stderr_callback`, respectively, some functions that accept a string as an argument. For example, you can color the output (the code example uses the [`termcolor`](https://github.com/termcolor/termcolor) library):
+
+```python
+import suby
+from termcolor import colored
+
+def my_new_stdout(string: str) -> None:
+    print(colored(string, 'red'), end='')
+
+suby('python', '-c', 'print("hello, world!")', stdout_callback=my_new_stdout)
+# > hello, world!
+# You can't see it here, but believe me, if you repeat the code at home, the output in the console will be red!
+```
+
+You can also completely disable the output by passing `True` as the `catch_output` parameter:
+
+```python
+suby('python', '-c', 'print("hello, world!")', catch_output=True)
+# There's nothing here.
+```
+
+If you specify `catch_output=True`, and at the same time redefine your functions for output, your functions will not be called either. In addition, `suby` always returns [the result](#run-subprocess-and-look-at-the-result) of executing the command, containing the full output. The `catch_output` argument can stop exactly the output, but it does not prevent the collection and buffering of the output.
