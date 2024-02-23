@@ -137,7 +137,7 @@ If you still prefer logging, you can use any object that implements the [logger 
 
 By default, `suby` raises exceptions in three cases:
 
-1. If the command you are calling ended with a return code not equal to `0`. In this case, you will see an exception `suby.errors.RunningCommandError`:
+1. If the command you are calling ended with a return code not equal to `0`. In this case, you will see an exception `suby.RunningCommandError`:
 
 ```python
 import suby
