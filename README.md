@@ -202,7 +202,7 @@ print(suby('python', '-c', 'import time; time.sleep(10_000)', token=token, catch
 
 ## Timeouts
 
-You can set a timeout for `suby`. It must be an integer greater than zero, which indicates the number of seconds that the sub process can continue to run. If the timeout expires before the subprocess completes, an exception will be raised:
+You can set a timeout for `suby`. It must be an integer greater than zero, which indicates the number of seconds that the subprocess can continue to run. If the timeout expires before the subprocess completes, an exception will be raised:
 
 ```python
 import suby
