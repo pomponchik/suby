@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="190mm"
+   height="63mm"
+   viewBox="0 0 190 63"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3 (0e150ed, 2023-07-21)"
+   sodipodi:docname="logo_2.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.42050288"
+     inkscape:cx="428.0589"
+     inkscape:cy="544.58605"
+     inkscape:window-width="1512"
+     inkscape:window-height="843"
+     inkscape:window-x="0"
+     inkscape:window-y="38"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1">
+    <rect
+       x="301.2485"
+       y="138.53033"
+       width="477.16003"
+       height="244.07726"
+       id="rect29" />
+    <rect
+       x="300.86658"
+       y="158.248"
+       width="477.48157"
+       height="245.18671"
+       id="rect28" />
+    <linearGradient
+       id="linearGradient27"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#bfe1fb;stop-opacity:1;"
+         offset="0"
+         id="stop27" />
+      <stop
+         style="stop-color:#bfe1fb;stop-opacity:0;"
+         offset="1"
+         id="stop28" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient25"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#c3fbbf;stop-opacity:1;"
+         offset="0"
+         id="stop25" />
+      <stop
+         style="stop-color:#c3fbbf;stop-opacity:0;"
+         offset="1"
+         id="stop26" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient23"
+       inkscape:collect="always">
+      <stop
+         style="stop-color:#fafbbf;stop-opacity:1;"
+         offset="0"
+         id="stop23" />
+      <stop
+         style="stop-color:#fafbbf;stop-opacity:0;"
+         offset="1"
+         id="stop24" />
+    </linearGradient>
+    <rect
+       x="102.64169"
+       y="182.04375"
+       width="588.73724"
+       height="317.60825"
+       id="rect1" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient23"
+       id="linearGradient24"
+       x1="50.492085"
+       y1="66.973679"
+       x2="78.71917"
+       y2="66.973679"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient25"
+       id="linearGradient26"
+       x1="50.492085"
+       y1="66.973679"
+       x2="78.71917"
+       y2="66.973679"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient27"
+       id="linearGradient28"
+       x1="50.492085"
+       y1="66.973679"
+       x2="78.71917"
+       y2="66.973679"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <g
+     inkscape:label="Слой 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       sodipodi:type="star"
+       style="fill:url(#linearGradient24);stroke-width:0.264583"
+       id="path23"
+       inkscape:flatsided="true"
+       sodipodi:sides="3"
+       sodipodi:cx="62.859528"
+       sodipodi:cy="64.411613"
+       sodipodi:r1="16.66688"
+       sodipodi:r2="8.3334389"
+       sodipodi:arg1="1.7818897"
+       sodipodi:arg2="2.8290872"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="M 59.367331,80.708528 50.492084,53.238825 78.719168,59.287487 Z"
+       inkscape:transform-center-x="-1.762185"
+       inkscape:transform-center-y="2.562063"
+       transform="matrix(1.0092168,0,0,1,-39.513565,-41.43852)" />
+    <path
+       sodipodi:type="star"
+       style="fill:url(#linearGradient28);stroke-width:0.264583"
+       id="path23-5"
+       inkscape:flatsided="true"
+       sodipodi:sides="3"
+       sodipodi:cx="62.859528"
+       sodipodi:cy="64.411613"
+       sodipodi:r1="16.66688"
+       sodipodi:r2="8.3334389"
+       sodipodi:arg1="1.7818897"
+       sodipodi:arg2="2.8290872"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="M 59.367331,80.708528 50.492084,53.238825 78.719168,59.287487 Z"
+       inkscape:transform-center-x="-1.7621844"
+       inkscape:transform-center-y="2.562063"
+       transform="matrix(1.0092168,0,0,1,-18.870347,-25.426804)" />
+    <path
+       sodipodi:type="star"
+       style="fill:url(#linearGradient26);stroke-width:0.264583"
+       id="path23-51"
+       inkscape:flatsided="true"
+       sodipodi:sides="3"
+       sodipodi:cx="62.859528"
+       sodipodi:cy="64.411613"
+       sodipodi:r1="16.66688"
+       sodipodi:r2="8.3334389"
+       sodipodi:arg1="1.7818897"
+       sodipodi:arg2="2.8290872"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="M 59.367331,80.708528 50.492084,53.238825 78.719168,59.287487 Z"
+       inkscape:transform-center-x="-1.7621852"
+       inkscape:transform-center-y="2.562063"
+       transform="matrix(1.0092168,0,0,1,-29.532317,-33.806994)" />
+    <text
+       xml:space="preserve"
+       transform="matrix(0.26702196,0,0,0.26458333,-10.954153,-30.016849)"
+       id="text28"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:146.667px;font-family:'Noto Sans Osmanya';-inkscape-font-specification:'Noto Sans Osmanya';white-space:pre;shape-inside:url(#rect28);fill:#e4fbbf;fill-opacity:1"><tspan
+         x="300.86719"
+         y="292.0568"
+         id="tspan1">SUBY</tspan></text>
+    <text
+       xml:space="preserve"
+       transform="scale(0.26458333)"
+       id="text29"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:146.667px;font-family:'Noto Sans Osmanya';-inkscape-font-specification:'Noto Sans Osmanya';white-space:pre;shape-inside:url(#rect29);fill:#e4fbbf;fill-opacity:1" />
+  </g>
+</svg>

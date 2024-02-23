@@ -1,0 +1,15 @@
+.DS_Store
+__pycache__
+venv
+.pytest_cache
+build
+dist
+*.egg-info
+test.py
+.coverage
+.coverage.*
+.idea
+.ruff_cache
+.mutmut-cache
+.mypy_cache
+html
