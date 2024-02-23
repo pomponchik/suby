@@ -29,6 +29,7 @@ Here is a small wrapper around the [subprocesses](https://docs.python.org/3/libr
 - [**Logging**](#logging)
 - [**Exceptions**](#exceptions)
 - [**Working with Cancellation Tokens**](#working-with-cancellation-tokens)
+- [**Timeouts**](#timeouts)
 
 
 ## Quick start
@@ -72,7 +73,7 @@ print(result)
 
 ## Output
 
-By default, the `stdout` and `stderr` of the subprocess are intercepted and output to the `stdout` and `stderr` of the current process. The reading from the subprocess is continuous, and the output is every time a full line is read. For continuous reading from `stderr`, a separate thread is created in the main process, so that `stdout` and `stderr` are read independently.
+By default, the `stdout` and `stderr` of the subprocess are forwarded to the `stdout` and `stderr` of the current process. The reading from the subprocess is continuous, and the output is every time a full line is read. For continuous reading from `stderr`, a separate thread is created in the main process, so that `stdout` and `stderr` are read independently.
 
 You can override the output functions for `stdout` and `stderr`. To do this, you need to pass as arguments `stdout_callback` and `stderr_callback`, respectively, some functions that accept a string as an argument. For example, you can color the output (the code example uses the [`termcolor`](https://github.com/termcolor/termcolor) library):
 
@@ -149,27 +150,9 @@ except RunningCommandError as e:
     # > Error when executing the command "python -c 1/0".
 ```
 
-2. If you passed a [cancellation token](https://cantok.readthedocs.io/en/latest/the_pattern/) when calling the command, and the token was canceled, an exception will be raised [corresponding to the type](https://cantok.readthedocs.io/en/latest/what_are_tokens/exceptions/) of canceled token. This part of the functionality is integrated with the [cantok](https://cantok.readthedocs.io/en/latest/) library, so we recommend that you familiarize yourself with it beforehand. Here is a small example of how to pass cancellation tokens and catch exceptions from them:
+2. If you passed a [cancellation token](https://cantok.readthedocs.io/en/latest/the_pattern/) when calling the command, and the token was canceled, an exception will be raised [corresponding to the type](https://cantok.readthedocs.io/en/latest/what_are_tokens/exceptions/) of canceled token. [This part of the functionality](#working-with-cancellation-tokens) is integrated with the [cantok](https://cantok.readthedocs.io/en/latest/) library, so we recommend that you familiarize yourself with it beforehand.
 
-```python
-from random import randint
-from cantok import ConditionToken
-
-token = ConditionToken(lambda: randint(1, 1000) == 7)
-suby('python', '-c', 'import time; time.sleep(10_000)', token=token)
-```
-
-3. You have set a timeout (in seconds) for the operation and it has expired. To count the timeout "under the hood", suby uses [`TimeoutToken`](https://cantok.readthedocs.io/en/latest/types_of_tokens/TimeoutToken/). Therefore, when the timeout expires, `cantok.errors.TimeoutCancellationError` will be raised:
-
-```python
-from cantok import TimeoutCancellationError
-
-try:
-    suby('python', '-c', 'import time; time.sleep(10_000)', timeout=1)
-except TimeoutCancellationError as e:
-    print(e)
-    # > The timeout of 1 seconds has expired.
-```
+3. You have set a [timeout](#timeouts) for the operation and it has expired.
 
 You can prevent `suby` from raising any exceptions. To do this, set the `catch_exceptions` parameter to `True`:
 
@@ -184,7 +167,7 @@ Keep in mind that the full result of the subprocess call can also be found throu
 ```python
 try:
     suby('python', '-c', 'import time; time.sleep(10_000)', timeout=1)
-except TimeoutCancellationError as e:
+except suby.TimeoutCancellationError as e:
     print(e.result)
     # > SubprocessResult(id='a80dc26cd03211eea347320319d7541c', stdout='', stderr='', returncode=-9, killed_by_token=True)
 ```
@@ -195,3 +178,55 @@ except TimeoutCancellationError as e:
 `suby` is fully compatible with the [cancellation token pattern](https://cantok.readthedocs.io/en/latest/the_pattern/) and supports any token objects from the [`cantok`](https://github.com/pomponchik/cantok) library.
 
 The essence of the pattern is that you can pass an object to `suby`, from which it can find out whether the operation still needs to be continued or not. If not, it kills the subprocess. This pattern can be especially useful in the case of commands that are executed for a long time or for an unpredictably long time. When the result becomes unnecessary, there is no point in sitting and waiting for the command to work out.
+
+So, you can pass your cancellation tokens to `suby`. By default, canceling a token causes an exception to be raised:
+
+```python
+from random import randint
+import suby
+from cantok import ConditionToken
+
+token = ConditionToken(lambda: randint(1, 1000) == 7)  # This token will be cancelled when a random unlikely event occurs.
+suby('python', '-c', 'import time; time.sleep(10_000)', token=token)
+# > cantok.errors.ConditionCancellationError: The cancellation condition was satisfied.
+```
+
+However, if you pass the `catch_exceptions=True` argument, the exception [will not be raised](#exceptions). Instead, you will get the [usual result](#run-subprocess-and-look-at-the-result) of calling `suby` with the `killed_by_token=True` flag:
+
+```python
+token = ConditionToken(lambda: randint(1, 1000) == 7)
+print(suby('python', '-c', 'import time; time.sleep(10_000)', token=token, catch_exceptions=True))
+# > SubprocessResult(id='e92ccd54d24b11ee8376320319d7541c', stdout='', stderr='', returncode=-9, killed_by_token=True)
+```
+
+"Under the hood" a separate thread is created to track the status of the token. When the token is canceled, the thread kills the subprocess.
+
+## Timeouts
+
+You can set a timeout for `suby`. It must be an integer greater than zero, which indicates the number of seconds that the sub process can continue to run. If the timeout expires before the subprocess completes, an exception will be raised:
+
+```python
+import suby
+
+suby('python', '-c', 'import time; time.sleep(10_000)', timeout=1)
+# > cantok.errors.TimeoutCancellationError: The timeout of 1 seconds has expired.
+```
+
+To count the timeout, "under the hood" `suby` uses [`TimeoutToken`](https://cantok.readthedocs.io/en/latest/types_of_tokens/TimeoutToken/) from the [`cantok`](https://github.com/pomponchik/cantok) library.
+
+The exception corresponding to this token was be reimported to `suby`:
+
+```python
+try:
+    suby('python', '-c', 'import time; time.sleep(10_000)', timeout=1)
+except suby.TimeoutCancellationError as e:  # As you can see, TimeoutCancellationError is available in the suby module.
+    print(e)
+    # > The timeout of 1 seconds has expired.
+```
+
+Just as with [regular cancellation tokens](#working-with-cancellation-tokens), you can prevent exceptions from being raised using the `catch_exceptions=True` argument:
+
+```python
+print(suby('python', '-c', 'import time; time.sleep(10_000)', timeout=1, catch_exceptions=True))
+# > SubprocessResult(id='ea88c518d25011eeb25e320319d7541c', stdout='', stderr='', returncode=-9, killed_by_token=True)
+```
