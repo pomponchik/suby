@@ -141,11 +141,10 @@ By default, `suby` raises exceptions in three cases:
 
 ```python
 import suby
-from suby.errors import RunningCommandError
 
 try:
     suby('python', '-c', '1/0')
-except RunningCommandError as e:
+except suby.RunningCommandError as e:
     print(e)
     # > Error when executing the command "python -c 1/0".
 ```
