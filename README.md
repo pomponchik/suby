@@ -1,4 +1,4 @@
-![logo](https://raw.githubusercontent.com/pomponchik/suby/develop/docs/assets/logo_4.svg)
+![logo](https://raw.githubusercontent.com/pomponchik/suby/develop/docs/assets/logo_5.svg)
 
 [![Downloads](https://static.pepy.tech/badge/suby/month)](https://pepy.tech/project/suby)
 [![Downloads](https://static.pepy.tech/badge/suby)](https://pepy.tech/project/suby)
