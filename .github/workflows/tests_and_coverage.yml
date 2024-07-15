@@ -45,4 +45,4 @@ jobs:
         ./codecov -t ${CODECOV_TOKEN}
 
     - name: Run tests and show the branch coverage on the command line
-      run: coverage run --source=suby --omit="*tests*" -m pytest --cache-clear --assert=plain
+      run: coverage run --source=suby --omit="*tests*" -m pytest --cache-clear --assert=plain && coverage report -m
