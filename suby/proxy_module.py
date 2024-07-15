@@ -6,7 +6,7 @@ from typing import List, Tuple, Callable, Union, Optional, Any
 from pathlib import Path
 
 from emptylog import EmptyLogger, LoggerProtocol
-from cantok import AbstractToken, TimeoutToken, CancellationError
+from cantok import AbstractToken, TimeoutToken, DefaultToken, CancellationError
 
 from suby.errors import RunningCommandError
 from suby.subprocess_result import SubprocessResult
@@ -23,7 +23,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
         stdout_callback: Callable[[str], Any] = stdout_with_flush,
         stderr_callback: Callable[[str], Any] = stderr_with_flush,
         timeout: Optional[Union[int, float]] = None,
-        token: Optional[AbstractToken] = None,
+        token: AbstractToken = DefaultToken(),
     ) -> SubprocessResult:
         """
         About reading from strout and stderr: https://stackoverflow.com/a/28319191/14522393
@@ -44,7 +44,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
 
         with Popen(list(converted_arguments), stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True) as process:
             stderr_reading_thread = self.run_stderr_thread(process, stderr_buffer, result, catch_output, stderr_callback)
-            if token is not None:
+            if not isinstance(token, DefaultToken):
                 killing_thread = self.run_killing_thread(process, token, result)
 
             for line in process.stdout:  # type: ignore[union-attr]
@@ -53,7 +53,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
                     stdout_callback(line)
 
             stderr_reading_thread.join()
-            if token is not None:
+            if not isinstance(token, DefaultToken):
                 killing_thread.join()
 
         self.fill_result(stdout_buffer, stderr_buffer, process.returncode, result)
