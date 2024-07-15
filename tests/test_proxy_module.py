@@ -3,8 +3,10 @@ import sys
 from time import perf_counter
 from io import StringIO
 from contextlib import redirect_stdout, redirect_stderr
+from pathlib import Path
 
 import pytest
+import full_match
 from cantok import TimeoutCancellationError, ConditionCancellationError, ConditionToken, SimpleToken
 from emptylog import MemoryLogger
 
@@ -308,3 +310,24 @@ def test_replace_stderr_callback():
 
     assert stderr_buffer.getvalue() == ''
     assert stdout_buffer.getvalue() == ''
+
+
+@pytest.mark.parametrize(
+    ['arguments', 'exception_message'],
+    (
+        ([None], 'Only strings and pathlib.Path objects can be positional arguments when calling the suby function. You passed "None" (NoneType).'),
+        ([1], 'Only strings and pathlib.Path objects can be positional arguments when calling the suby function. You passed "1" (int).'),
+        (['python', 1], 'Only strings and pathlib.Path objects can be positional arguments when calling the suby function. You passed "1" (int).'),
+    ),
+)
+def test_pass_wrong_positional_argument(arguments, exception_message):
+    with pytest.raises(TypeError, match=full_match(exception_message)):
+        suby(*arguments)
+
+
+def test_use_path_object_as_first_positional_argument():
+    result = suby(Path(sys.executable), '-c', 'print("kek")')
+
+    assert result.stdout == 'kek\n'
+    assert result.stderr == ''
+    assert result.returncode == 0
