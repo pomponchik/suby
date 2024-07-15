@@ -70,6 +70,8 @@ print(result)
 # > SubprocessResult(id='e9f2d29acb4011ee8957320319d7541c', stdout='hello, world!\n', stderr='', returncode=0, killed_by_token=False)
 ```
 
+You can use strings or [`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path) objects as positional arguments for `suby`.
+
 
 ## Output
 
@@ -202,7 +204,7 @@ print(suby('python', '-c', 'import time; time.sleep(10_000)', token=token, catch
 
 ## Timeouts
 
-You can set a timeout for `suby`. It must be an integer greater than zero, which indicates the number of seconds that the sub process can continue to run. If the timeout expires before the subprocess completes, an exception will be raised:
+You can set a timeout for `suby`. It must be an integer greater than zero, which indicates the number of seconds that the subprocess can continue to run. If the timeout expires before the subprocess completes, an exception will be raised:
 
 ```python
 import suby

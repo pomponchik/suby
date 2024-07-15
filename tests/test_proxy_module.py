@@ -3,8 +3,10 @@ import sys
 from time import perf_counter
 from io import StringIO
 from contextlib import redirect_stdout, redirect_stderr
+from pathlib import Path
 
 import pytest
+import full_match
 from cantok import TimeoutCancellationError, ConditionCancellationError, ConditionToken, SimpleToken
 from emptylog import MemoryLogger
 
@@ -68,7 +70,7 @@ def test_timeout_without_catching_exception():
 
     start_time = perf_counter()
     try:
-        result = suby(sys.executable, '-c', f'import time; time.sleep({sleep_time})', timeout=timeout)
+        suby(sys.executable, '-c', f'import time; time.sleep({sleep_time})', timeout=timeout)
     except TimeoutCancellationError as e:
         assert e.result.stdout == ''
         assert e.result.stderr == ''
@@ -145,7 +147,7 @@ def test_logging_with_expired_timeout():
 def test_logging_with_exception():
     logger = MemoryLogger()
 
-    suby(sys.executable, '-c', f'1/0', logger=logger, catch_exceptions=True, catch_output=True)
+    suby(sys.executable, '-c', '1/0', logger=logger, catch_exceptions=True, catch_output=True)
 
     assert len(logger.data.info) == 1
     assert len(logger.data.error) == 1
@@ -171,7 +173,7 @@ def test_logging_with_exception_without_catching_exceptions():
     logger = MemoryLogger()
 
     with pytest.raises(RunningCommandError):
-        suby(sys.executable, '-c', f'1/0', logger=logger, catch_output=True)
+        suby(sys.executable, '-c', '1/0', logger=logger, catch_output=True)
 
     assert len(logger.data.info) == 1
     assert len(logger.data.error) == 1
@@ -308,3 +310,24 @@ def test_replace_stderr_callback():
 
     assert stderr_buffer.getvalue() == ''
     assert stdout_buffer.getvalue() == ''
+
+
+@pytest.mark.parametrize(
+    ['arguments', 'exception_message'],
+    (
+        ([None], 'Only strings and pathlib.Path objects can be positional arguments when calling the suby function. You passed "None" (NoneType).'),
+        ([1], 'Only strings and pathlib.Path objects can be positional arguments when calling the suby function. You passed "1" (int).'),
+        (['python', 1], 'Only strings and pathlib.Path objects can be positional arguments when calling the suby function. You passed "1" (int).'),
+    ),
+)
+def test_pass_wrong_positional_argument(arguments, exception_message):
+    with pytest.raises(TypeError, match=full_match(exception_message)):
+        suby(*arguments)
+
+
+def test_use_path_object_as_first_positional_argument():
+    result = suby(Path(sys.executable), '-c', 'print("kek")')
+
+    assert result.stdout == 'kek\n'
+    assert result.stderr == ''
+    assert result.returncode == 0
