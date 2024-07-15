@@ -31,7 +31,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
         if timeout is not None and isinstance(token, DefaultToken):
             token = TimeoutToken(timeout)
         elif timeout is not None:
-            token += TimeoutToken(timeout)  # type: ignore[operator]
+            token += TimeoutToken(timeout)
 
         converted_arguments = self.convert_arguments(arguments)
         arguments_string_representation = ' '.join([argument if ' ' not in argument else f'"{argument}"' for argument in converted_arguments])
@@ -63,7 +63,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
                 if result.killed_by_token:
                     logger.error(f'The execution of the "{arguments_string_representation}" command was canceled using a cancellation token.')
                     try:
-                        token.check()  # type: ignore[union-attr]
+                        token.check()
                     except CancellationError as e:
                         e.result = result  # type: ignore[attr-defined]
                         raise e
