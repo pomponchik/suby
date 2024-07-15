@@ -28,7 +28,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
         """
         About reading from strout and stderr: https://stackoverflow.com/a/28319191/14522393
         """
-        if timeout is not None and token is None:
+        if timeout is not None and isinstance(token, DefaultToken):
             token = TimeoutToken(timeout)
         elif timeout is not None:
             token += TimeoutToken(timeout)  # type: ignore[operator]
