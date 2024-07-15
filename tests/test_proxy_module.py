@@ -68,7 +68,7 @@ def test_timeout_without_catching_exception():
 
     start_time = perf_counter()
     try:
-        result = suby(sys.executable, '-c', f'import time; time.sleep({sleep_time})', timeout=timeout)
+        suby(sys.executable, '-c', f'import time; time.sleep({sleep_time})', timeout=timeout)
     except TimeoutCancellationError as e:
         assert e.result.stdout == ''
         assert e.result.stderr == ''
@@ -145,7 +145,7 @@ def test_logging_with_expired_timeout():
 def test_logging_with_exception():
     logger = MemoryLogger()
 
-    suby(sys.executable, '-c', f'1/0', logger=logger, catch_exceptions=True, catch_output=True)
+    suby(sys.executable, '-c', '1/0', logger=logger, catch_exceptions=True, catch_output=True)
 
     assert len(logger.data.info) == 1
     assert len(logger.data.error) == 1
@@ -171,7 +171,7 @@ def test_logging_with_exception_without_catching_exceptions():
     logger = MemoryLogger()
 
     with pytest.raises(RunningCommandError):
-        suby(sys.executable, '-c', f'1/0', logger=logger, catch_output=True)
+        suby(sys.executable, '-c', '1/0', logger=logger, catch_output=True)
 
     assert len(logger.data.info) == 1
     assert len(logger.data.error) == 1
