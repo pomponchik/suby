@@ -43,3 +43,6 @@ jobs:
         find . -iregex "codecov.*"
         chmod +x codecov
         ./codecov -t ${CODECOV_TOKEN}
+
+    - name: Run tests and show the branch coverage on the command line
+      run: coverage run --source=suby --omit="*tests*" -m pytest --cache-clear --assert=plain
