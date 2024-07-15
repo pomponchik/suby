@@ -2,7 +2,8 @@ import sys
 from time import sleep
 from threading import Thread
 from subprocess import Popen, PIPE
-from typing import List, Callable, Union, Optional, Any
+from typing import List, Tuple, Callable, Union, Optional, Any
+from pathlib import Path
 
 from emptylog import EmptyLogger, LoggerProtocol
 from cantok import AbstractToken, TimeoutToken, CancellationError
@@ -15,7 +16,7 @@ from suby.callbacks import stdout_with_flush, stderr_with_flush
 class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
     def __call__(
         self,
-        *arguments: str,
+        *arguments: Union[str, Path],
         catch_output: bool = False,
         catch_exceptions: bool = False,
         logger: LoggerProtocol = EmptyLogger(),
@@ -32,7 +33,8 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
         elif timeout is not None:
             token += TimeoutToken(timeout)  # type: ignore[operator]
 
-        arguments_string_representation = ' '.join([argument if ' ' not in argument else f'"{argument}"' for argument in arguments])
+        converted_arguments = self.convert_arguments(arguments)
+        arguments_string_representation = ' '.join([argument if ' ' not in argument else f'"{argument}"' for argument in converted_arguments])
 
         stdout_buffer: List[str] = []
         stderr_buffer: List[str] = []
@@ -40,7 +42,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
 
         logger.info(f'The beginning of the execution of the command "{arguments_string_representation}".')
 
-        with Popen(list(arguments), stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True) as process:
+        with Popen(list(converted_arguments), stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True) as process:
             stderr_reading_thread = self.run_stderr_thread(process, stderr_buffer, result, catch_output, stderr_callback)
             if token is not None:
                 killing_thread = self.run_killing_thread(process, token, result)
@@ -79,6 +81,20 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
             logger.info(f'The command "{arguments_string_representation}" has been successfully executed.')
 
         return result
+
+    @staticmethod
+    def convert_arguments(arguments: Tuple[Union[str, Path], ...]) -> List[str]:
+        converted_arguments = []
+
+        for argument in arguments:
+            if isinstance(argument, Path):
+                converted_arguments.append(str(argument))
+            elif isinstance(argument, str):
+                converted_arguments.append(argument)
+            else:
+                raise TypeError(f'Only strings and pathlib.Path objects can be positional arguments when calling the suby function. You passed "{argument}" ({type(argument).__name__}).')
+
+        return converted_arguments
 
     def run_killing_thread(self, process: Popen, token: AbstractToken, result: SubprocessResult) -> Thread:  # type: ignore[type-arg]
         thread = Thread(target=self.killing_loop, args=(process, token, result))
