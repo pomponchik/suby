@@ -335,3 +335,9 @@ def test_use_path_object_as_first_positional_argument():
 
 def test_suby_as_attribute_of_suby():
     assert suby.suby is suby
+
+
+def test_full_import_form():
+    from suby import suby as local_suby
+
+    assert suby is local_suby
