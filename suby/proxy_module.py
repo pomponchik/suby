@@ -4,6 +4,7 @@ from threading import Thread
 from subprocess import Popen, PIPE
 from typing import List, Tuple, Callable, Union, Optional, Any
 from pathlib import Path
+from types import ModuleType
 
 from emptylog import EmptyLogger, LoggerProtocol
 from cantok import AbstractToken, TimeoutToken, DefaultToken, CancellationError
@@ -129,3 +130,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
         result.stdout = ''.join(stdout_buffer)
         result.stderr = ''.join(stderr_buffer)
         result.returncode = returncode
+
+    @property
+    def suby(self) -> ModuleType:
+        return self
