@@ -331,3 +331,13 @@ def test_use_path_object_as_first_positional_argument():
     assert result.stdout == 'kek\n'
     assert result.stderr == ''
     assert result.returncode == 0
+
+
+def test_suby_as_attribute_of_suby():
+    assert suby.suby is suby
+
+
+def test_full_import_form():
+    from suby import suby as local_suby
+
+    assert suby is local_suby

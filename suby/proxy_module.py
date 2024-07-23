@@ -4,9 +4,10 @@ from threading import Thread
 from subprocess import Popen, PIPE
 from typing import List, Tuple, Callable, Union, Optional, Any
 from pathlib import Path
+from types import ModuleType
 
 from emptylog import EmptyLogger, LoggerProtocol
-from cantok import AbstractToken, TimeoutToken, CancellationError
+from cantok import AbstractToken, TimeoutToken, DefaultToken, CancellationError
 
 from suby.errors import RunningCommandError
 from suby.subprocess_result import SubprocessResult
@@ -23,15 +24,15 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
         stdout_callback: Callable[[str], Any] = stdout_with_flush,
         stderr_callback: Callable[[str], Any] = stderr_with_flush,
         timeout: Optional[Union[int, float]] = None,
-        token: Optional[AbstractToken] = None,
+        token: AbstractToken = DefaultToken(),
     ) -> SubprocessResult:
         """
         About reading from strout and stderr: https://stackoverflow.com/a/28319191/14522393
         """
-        if timeout is not None and token is None:
+        if timeout is not None and isinstance(token, DefaultToken):
             token = TimeoutToken(timeout)
         elif timeout is not None:
-            token += TimeoutToken(timeout)  # type: ignore[operator]
+            token += TimeoutToken(timeout)
 
         converted_arguments = self.convert_arguments(arguments)
         arguments_string_representation = ' '.join([argument if ' ' not in argument else f'"{argument}"' for argument in converted_arguments])
@@ -44,7 +45,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
 
         with Popen(list(converted_arguments), stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True) as process:
             stderr_reading_thread = self.run_stderr_thread(process, stderr_buffer, result, catch_output, stderr_callback)
-            if token is not None:
+            if not isinstance(token, DefaultToken):
                 killing_thread = self.run_killing_thread(process, token, result)
 
             for line in process.stdout:  # type: ignore[union-attr]
@@ -53,7 +54,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
                     stdout_callback(line)
 
             stderr_reading_thread.join()
-            if token is not None:
+            if not isinstance(token, DefaultToken):
                 killing_thread.join()
 
         self.fill_result(stdout_buffer, stderr_buffer, process.returncode, result)
@@ -63,7 +64,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
                 if result.killed_by_token:
                     logger.error(f'The execution of the "{arguments_string_representation}" command was canceled using a cancellation token.')
                     try:
-                        token.check()  # type: ignore[union-attr]
+                        token.check()
                     except CancellationError as e:
                         e.result = result  # type: ignore[attr-defined]
                         raise e
@@ -129,3 +130,7 @@ class ProxyModule(sys.modules[__name__].__class__):  # type: ignore[misc]
         result.stdout = ''.join(stdout_buffer)
         result.stderr = ''.join(stderr_buffer)
         result.returncode = returncode
+
+    @property
+    def suby(self) -> ModuleType:
+        return self
