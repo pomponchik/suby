@@ -58,23 +58,13 @@ The `suby` module is a callable object and can be imported like this:
 import suby
 ```
 
-If you use static type checking and get an error that it is impossible to call the module, use a more detailed import form:
+If you use static type checking and get an error that it is impossible to call the module, use a more detailed import form - functionally, these two import ways are identical:
 
 ```python
 from suby import suby
 ```
 
-Functionally, these two import ways are identical.
-
-When called `suby` returns an object of the `SubprocessResult` class. It contains the following required fields:
-
-- **id** - a unique string that allows you to distinguish one result of calling the same command from another.
-- **stdout** - a string containing the entire buffered output of the command being run.
-- **stderr** - a string containing the entire buffered stderr of the command being run.
-- **returncode** - an integer indicating the return code of the subprocess. `0` means that the process was completed successfully, the other options usually indicate something bad.
-- **killed_by_token** - a boolean flag indicating whether the subprocess was killed due to [token](https://cantok.readthedocs.io/en/latest/the_pattern/) cancellation.
-
-The simplest example of what it might look like:
+Let's try to call `suby`. You can use strings or [`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path) objects as positional arguments, but now we call it with only simple strings:
 
 ```python
 result = suby('python', '-c', 'print("hello, world!")')
@@ -82,7 +72,13 @@ print(result)
 # > SubprocessResult(id='e9f2d29acb4011ee8957320319d7541c', stdout='hello, world!\n', stderr='', returncode=0, killed_by_token=False)
 ```
 
-You can use strings or [`pathlib.Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path) objects as positional arguments for `suby`.
+We can see that it returns an object of the `SubprocessResult` class. It contains the following required fields:
+
+- **id** - a unique string that allows you to distinguish one result of calling the same command from another.
+- **stdout** - a string containing the entire buffered output of the command being run.
+- **stderr** - a string containing the entire buffered stderr of the command being run.
+- **returncode** - an integer indicating the return code of the subprocess. `0` means that the process was completed successfully, the other options usually indicate something bad.
+- **killed_by_token** - a boolean flag indicating whether the subprocess was killed due to [token](https://cantok.readthedocs.io/en/latest/the_pattern/) cancellation.
 
 
 ## Output
